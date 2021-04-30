@@ -1,0 +1,716 @@
+set serveroutput on;
+  
+   @ c:\sql\first.sql
+   start c:\sql\first.sql
+
+/*------------------------------------------------------Example 1-----------------------------------------*/
+declare    
+     begin
+           dbms_output.put_line('Hello');
+     end;
+/*--------------------------------------------------------Example 2--------------------------------------- */
+
+declare
+name varchar2(20):='Rahul';
+begin
+dbms_output.put_line('Hello');
+dbms_output.put_line(name);
+end;
+/*-----------------------------------------------Example 3---------------------------------------------------*/
+
+/* a variable declared NOT NULL must have an 
+  initialization assignment */
+
+declare
+name varchar2(20) not null:='Ravi';
+begin
+dbms_output.put_line('Hello');
+end;
+
+/*------------------------------------------------------Example 4--------------------------------------------*/
+
+   create table customer_master
+     (
+       customer_number varchar2(4),
+       firstname varchar2(15),
+       middlename varchar2(15),
+       lastname varchar2(15),
+       address varchar2(20),
+      constraint customer_master_pk primary key(customer_number)
+     );
+
+  create table item_master
+   ( 
+   item_number varchar2(4),
+    item_name varchar2(10),
+    item_price number(6,2),
+    qoh number(3),
+    constraint item_master_pk primary key(item_number)
+ );
+ 
+ create table transaction_details
+   (
+      transaction_number varchar2(4),
+      customer_number varchar2(4),
+      item_number varchar2(4),
+      transaction_date date,
+      transaction_amount number(6),
+      constraint trans_det_tran_num_pk primary key(transaction_number),
+      constraint trans_det_cus_num_fk  foreign key(customer_number)
+      refrences customer_master(customer_number),
+       constraint trans_det_itm_num_fk  foreign key(item_number)
+      refrences item_master(item_number)
+   );
+     
+        '12-Nov-1998'   or '12-Nov-98'
+
+
+       
+
+
+  insert into customer_master values('C001','Amit','Kumar','Sharma','kolkata');
+  insert into customer_master values('&customer_number','&firstname','&middlename','&lastname','&address');
+
+declare
+firstname varchar2(20);
+begin
+select firstname into firstname from customer_master where customer_number='C00001';
+dbms_output.put_line(firstname);
+end;
+
+/*-----------------------------------------------Example 5-------------------------------------------------*/
+
+declare
+firstname customer_master.firstname%type;
+begin
+select firstname into firstname from customer_master where customer_number='C00001';
+dbms_output.put_line(firstname);
+end;
+/*------------------------------------------------Example 6 ---------------------------------------------*/
+
+declare
+firstname customer_master.firstname%type;
+middlename customer_master.middlename%type;
+lastname customer_master.lastname%type;
+begin
+select firstname,middlename,lastname into firstname,middlename,lastname from customer_master where customer_number='C00001';
+dbms_output.put_line(firstname);
+dbms_output.put_line(middlename);
+dbms_output.put_line(lastname);
+end;
+
+/*--------------------------------------------------Example 7--------------------------------------------*/
+
+declare 
+transaction_amount transaction_details.transaction_amount%type;
+begin 
+select transaction_amount into transaction_amount
+from transaction_details
+Where transaction_number='T00001';
+if transaction_amount>1000
+then
+dbms_output.put_line('Correct Amount');
+end if;
+end;
+
+/*------------------------------------------------------Example 8----------------------------------------*/
+
+/*--------- With if----------- */
+declare 
+transaction_amount transaction_details.transaction_amount%type;
+begin
+select transaction_amount into transaction_amount
+from transaction_details
+Where transaction_number='T00006';
+if transaction_amount>=1000 and transaction_amount<=2000
+then
+dbms_output.put_line('Less Amount');
+elsif transaction_amount>2000 and transaction_amount<=5000
+then
+dbms_output.put_line('Average Amount');
+else
+dbms_output.put_line('Good Amount');
+end if;
+end;
+/*-------------------------Example 9 -----------------------------------------------------------------------*/
+
+/*--------------- With case --------------------------------------------------------------------------------*/
+declare 
+transaction_amount transaction_details.transaction_amount%type;
+begin
+select transaction_amount into transaction_amount
+from transaction_details
+Where transaction_number='T00006';
+case
+when transaction_amount>=1000 and transaction_amount<=2000
+then dbms_output.put_line('Less Amount');
+when transaction_amount>2000 and transaction_amount<=5000
+then dbms_output.put_line('Average Amount');
+else
+dbms_output.put_line('Good Amount');
+end case;
+end;
+
+/*---------------------------Example 10-----------------------------------------------------------------*/
+
+/*---- loop demo 1------------------*/
+declare
+counter number:=1;
+begin
+loop
+  dbms_output.put_line('Hello');  
+   counter:=counter+1;
+    exit when counter=10;
+end loop;
+end;
+/*-------------------------------- Example 11----------------------------------------------------------*/
+declare
+begin
+for i in 1..10
+  loop
+  dbms_output.put_line('Hello');  
+ end loop;
+end;
+/*--------------------------------Example 12----------------------------------------------------------------*/
+declare
+begin
+for i in 1..10 
+  loop
+  dbms_output.put_line(i);  
+ end loop;
+end;
+/*------------------------------Example 13----------------------------------------------------------------*/
+declare
+begin
+for i in reverse 1..10 
+  loop
+  dbms_output.put_line(i);  
+ end loop;
+end;
+/*--------------------------------Example 14--------------------------------------------------------------*/
+declare
+ctr number:=1;
+begin
+while ctr<=10 loop 
+   dbms_output.put_line(ctr);  
+   ctr:=ctr+1;
+ end loop;
+end;
+-------------------------------------------------------------------------------------------------------
+DECLARE
+   a number(2) := 10;
+BEGIN
+   <<loopstart>>
+   -- while loop execution 
+   WHILE a < 20 LOOP
+      dbms_output.put_line ('value of a: ' || a);
+      a := a + 1;
+      IF a = 15 THEN
+         a := a + 1;
+         GOTO loopstart;
+      END IF;
+   END LOOP;
+END;
+/
+---------------------------------------------------------------------------------------------------------
+
+
+
+/*--------------------------------------Example 15 ------------------------------------------------------*/
+Procedure without a parameter being passed
+create or replace procedure demo1
+as
+begin
+dbms_output.put_line('Hello');
+end;
+  
+ /
+exec demo1
+
+/*------------------------------------Example 16 ---------------------------*/
+create or replace procedure demo2
+as
+number1 number:=1;
+number2 number:=2;
+result number;
+begin
+result:=number1+number2;
+dbms_output.put_line(result);
+end;
+/*------------------------------------Example 17 ---------------------------*/
+/*By default it is in parameter */
+create or replace procedure demo3(no1 number, no2 number)
+as
+result number;
+begin
+result:=no1+no2;
+dbms_output.put_line(result);
+end;
+
+   exec demo3(2,5)
+
+/*----------------------------------Example 18------------------------------*/
+/* No1 cannot be assigned value within the procedure */
+create or replace procedure demo3(no1 number, no2 number)
+as
+result number;
+begin
+no1:=3;
+result:=no1+no2;
+dbms_output.put_line(result);
+end;
+/*------------------------------Example 19 --------------------------------*/
+
+1) variable num number;
+
+2) create or replace procedure demo4(num out number)
+as
+begin 
+num:=10;
+end;
+
+3) exec demo4(:num);
+4) select :num from dual; or print num;
+
+/*------------------------------Example 20 --------------------------------*/
+/* Program will run but no effect of assignment  */
+
+1) variable num number;
+
+i b) exec :num:=100;
+2) create or replace procedure demo4(num out number)
+as
+begin 
+dbms_output.put_line('The value is'||num);
+num:=10;
+end;
+
+3) exec demo4(:num);
+4) select :num from dual; or print num;
+
+
+/*------------------------------Example 20 --------------------------------*/
+
+/* Nothing is printed as there is no point of assigning value to out parameter */
+1) variable num number;
+
+i b) exec :num:=100;
+2) create or replace procedure demo4(num out number)
+as
+begin 
+dbms_output.put_line(num);
+end;
+
+3) exec demo4(:num);
+4) select :num from dual; or print num;
+
+/*----------------------------Example 21 ----------------------------------*/
+
+/* the value show is 100 because value is assigned and then not reassigned within the procedure */
+1) variable num number;
+
+i b) exec :num:=100;
+2) create or replace procedure demo4(num in out number)
+as
+begin 
+dbms_output.put_line(num);
+num:=num+2;
+end;
+
+3) exec demo4(:num);
+4) select :num from dual; or print num;
+/*-------------------------------- Example 22-------------------------------------*/
+
+1) variable result number;
+
+2)   create or replace function demo5 ( no1 number, no2 number)  
+     return number as
+        begin
+          return no1+no2;
+    end;   
+   
+3)   exec :result:=demo5(1,2);
+4)   print result;
+
+/*---------------------------------------- Example 23
+create or replace function bonus_calc(total number)
+return number
+as
+total_bonus number(5):=100;
+begin
+total_bonus:=total_bonus+total;-
+return total_bonus;
+end;
+  
+-------------------------------*/
+
+create or replace package mypack1 
+as
+   function add(num1 number, num2 number) return number;
+   function subtract(num1 number, num2 number)return number;
+end;
+/
+create or replace package body mypack1
+as
+   function add(num1 number, num2 number)
+  return number as
+    begin 
+        return num1+num2;
+    end;
+   function subtract(num1 number, num2 number)
+     return number as
+     begin  
+       return num1-num2;
+    end;
+end;
+/
+variable result number;
+exec :result:=mypack1.add(1,2);
+print result;
+exec :result:=mypack1.subtract(2,1);
+print result;
+
+    declare
+         result number;
+          begin
+              result:=mypack1.add(1,2);
+              dbms_output.put_line(result);
+              result:=mypack1.subtract(2,1);           
+              dbms_output.put_line(result);
+         end; 
+/*------------------------------------------Example 24-----------------------------------*/
+
+create or replace package mypack2
+as
+   num1 number:=1;
+end;
+
+begin
+    dbms_output.put_line(mypack2.num1);
+end;
+
+/*----------------------------------------Example 25-----------------------------------------*/
+
+create or replace package mypack3
+as
+  procedure show;
+end;
+
+create or replace package body mypack3
+as
+  num1 number:=10;
+  procedure show
+   as 
+    begin
+    dbms_output.put_line(num1);
+  end;
+end;   
+------------------------------------------------------------------------
+     begin
+            dbms_output.put_line(mypack3.num1);
+            mypack3.show;
+        end;
+    
+   
+  
+
+/*-----------------------------------Example 26---------------------------------------------*/
+/* Exception NO_DATA_FOUND */
+
+declare
+firstname varchar2(20);
+begin
+select firstname into firstname from customer_master where customer_number='C1111';
+dbms_output.put_line(firstname);
+exception
+WHEN no_data_found then
+dbms_output.put_line('No record');
+end;
+
+/*-----------------------------------Example 27---------------------------------------------*/
+declare 
+    num1 number:=10;
+    num2 number:=0;
+begin
+    dbms_output.put_line(num1/num2);
+exception
+WHEN ZERO_DIVIDE THEN
+dbms_output.put_line('A number cannot be divided by 0');
+end;
+/*---------------------------------Example 28------------------------------------------*/
+
+create or replace procedure cursordemo1 
+as
+cursor mycursor is select firstname,lastname from customer_master;
+empfirstname customer_master.firstname%type;
+    emp
+lastname customer_master.lastname%type;
+begin
+
+      dbms_output.put_line('Before cursor open'); 
+
+     if  mycursor%isopen
+        then 
+            dbms_output.put_line('Open')
+       end if;
+          
+       /*  if mycursor%found
+               then 
+            dbms_output.put_line('Found')
+       end if;
+    
+        if  mycursor%notfound
+             then
+               dbms_output.put_line('Not Found')
+          end if;  
+   
+                dbms_output.put_line(mycursor%rowcount);  */
+                     
+   open mycursor;
+      if  mycursor%isopen
+        then 
+            dbms_output.put_line('Open')
+       end if;
+          
+         if mycursor%found
+               then 
+            dbms_output.put_line('Found')
+       end if;
+    
+        if  mycursor%notfound
+             then
+               dbms_output.put_line('Not Found')
+          end if;
+   
+          
+                dbms_output.put_line(mycursor%rowcount);
+           
+
+ loop
+  fetch mycursor into empfirstname,emplastname;
+   exit when mycursor%notfound;
+    dbms_output.put_line(empfirstname||' '||emplastname);
+  end loop;
+ close mycursor;
+    
+ dbms_out.put_line('After cursor close');  
+           if  mycursor%isopen
+          then 
+                  dbms_output.put_line('Open')
+           end if;
+          
+  /*       if mycursor%found
+               then 
+            dbms_output.put_line('Found')
+       end if;
+    
+        if  mycursor%notfound
+             then
+               dbms_output.put_line('Not Found')
+          end if;
+   
+                dbms_output.put_line(mycursor%rowcount); */
+            
+
+      
+
+end; 
+
+/*------------------------------------Example 29------------------------------------*/
+
+create or replace procedure cursordemo2 
+as
+cursor mycursor is select firstname,lastname from customer_master;
+begin
+ 
+  for i in mycursor loop
+    dbms_output.put_line(i.firstname||' '||i.lastname);
+  end loop;
+end;
+
+
+
+
+/*--------------------------------------Example 30 ----------------------------------*/
+ alter trigger triggername disable;
+ alter trigger triggername enable;
+ alter table tablename enable all triggers;
+ alter table tablename disable 
+ all triggers;
+drop trigger trigername;
+select trigger_name from user_triggers;
+select * from emp;
+
+create or replace trigger statement_trigger1
+
+
+before insert on emp
+begin
+dbms_output.put_line('Before Insert');
+end;
+
+create or replace trigger statement_trigger2
+after insert on emp
+begin
+dbms_output.put_line('After Insert');
+end;
+/*-----------------------------------Example 31----------------------------------------*/
+
+create or replace trigger statement_trigger3
+before update on emp
+begin
+dbms_output.put_line('before update start working');
+end;
+
+
+create or replace trigger row_trigger1
+before update on emp
+for each row
+begin
+dbms_output.put_line('before update of each row');
+end;
+
+/*-----------------------------------Example 32------------------------------------------*/
+
+create or replace trigger row_trigger_before_insert
+before INSERT on emp
+for each row
+begin
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.CODE);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.NAME);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.BASIC);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.CODE);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.NAME);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.BASIC);
+end;
+
+create or replace trigger row_trigger_after_insert
+after INSERT on emp
+for each row
+begin
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.CODE);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.NAME);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.BASIC);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.CODE);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.NAME);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.BASIC);
+end;
+
+/*--------------------------------------Example 33------------------------------------------*/
+
+create or replace trigger row_trigger_before_update
+before UPDATE on emp
+for each row
+begin
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.CODE);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.NAME);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.BASIC);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.CODE);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.NAME);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.BASIC);
+end;
+ 
+create or replace trigger row_trigger_after_update
+after UPDATE on emp
+for each row
+begin
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.CODE);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.NAME);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.BASIC);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.CODE);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.NAME);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.BASIC);
+end;
+
+/*---------------------------------------Example 34-----------------------------------------*/
+ 
+
+create or replace trigger row_trigger_before_delete
+before DELETE on emp
+for each row
+begin
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.CODE);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.NAME);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.BASIC);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.CODE);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.NAME);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.BASIC);
+end;
+ 
+create or replace trigger row_trigger_after_delete
+after DELETE on emp
+for each row
+begin
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.CODE);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.NAME);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.BASIC);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.CODE);
+ dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.NAME);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.BASIC);
+end;
+
+------------------------------Example 35-----------------------
+
+  create or replace procedure customersearch(cust_no varchar2)
+    as
+       cust_address varchar2(15);
+       begin
+       select address into cust_address from customer_master
+       where customer_number=cust_no;
+        exception
+          when no_data_found then
+          dbms_output.put_line('No record found');
+        end;
+   
+      
+       exec customersearch('C009')   
+    
+  create or replace procedure deletecustomer(cust_no varchar2)
+    as
+       cust_address varchar2(15);
+       begin
+      delete from customer_master
+       where customer_number=cust_no;
+        exception
+          when no_data_found then
+          dbms_output.put_line('No record found');
+        end;
+   
+   exec deletecustomer('C009') 
+
+
+  create or replace procedure customersearch1(cust_no varchar2)
+    as
+       cust_address varchar2(15);
+       begin
+       select address into cust_address from customer_master;
+            exception
+          when too_many_rows then
+          dbms_output.put_line('Multiple rows returned!!!');
+        end;
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

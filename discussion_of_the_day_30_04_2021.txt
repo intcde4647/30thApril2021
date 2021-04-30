@@ -1,0 +1,219 @@
+
+1 Insert Record using anonymous block
+2 Update Location
+3 Area of a circle
+4 Insert credit Procedure
+5 Select city Procedure
+
+6 Display Department names using cursor
+7 Find authorization Cursors
+8 Function with Exception handling
+9 Delete a record - Trigger
+
+----------------------------------------------------------------
+anonymous blocks
+procedure
+functions
+cursors
+exception handling
+Triggers
+----------------------------------------------------------------
+https://www.oracletutorial.com/plsql-tutorial/
+https://www.oracletutorial.com/plsql-tutorial/oracle-trigger/
+https://www.oracletutorial.com/plsql-tutorial/plsql-cursor/
+https://www.oracletutorial.com/plsql-tutorial/plsql-exception/
+
+CREATE TABLE employee_master
+(
+ 
+ empcode VARCHAR2(6) PRIMARY KEY,
+  
+ firstname VARCHAR2(15) NOT NULL,
+  
+ middlename VARCHAR2(15),
+  
+ lastname VARCHAR2(15) NOT NULL,
+  
+ desig VARCHAR2(15) NOT NULL,
+  
+ dept VARCHAR2(15) NOT NULL,
+  
+ basic NUMBER(7,2) NOT NULL,
+  
+ date_of_joining DATE NOT NULL
+);
+
+
+
+
+INSERT INTO employee_master VALUES('E00001','Peter',null,'Desouza','Mgr','Mkt',18000,'06-Jan-1980');
+
+INSERT INTO employee_master VALUES('E00002','Nalini','Kumari','Sharma','AsstMgr','Mkt',12000,'12-Oct-1978');
+INSERT INTO employee_master VALUES('E00003','Pankaj','Kumar','Shukla','AsstMgr','HR',15000,'10-Sep-1980');
+INSERT INTO employee_master VALUES('E00004','Ashish',null,'Kumar','AsstMgr','Sales',14000,'11-Jan-1981');
+
+INSERT INTO employee_master VALUES('E00005','Atul','Kumar','Shukla','AsstMgr','Mkt',15000,'21-Aug-2000')
+
+--------------------------------------------------------------------------------------------------------
+What is a cursor?
+
+The Oracle Engine uses a work area for its internal processing in order to execute SQL statement/statements.
+This work are is private to SQL's operation and is called Cursor.
+The data stored in the cursor is called the Active Data Set. 
+Explicit cursors
+An explicit cursor is an SELECT statement declared explicitly in the declaration section of the current block or a package specification.
+
+For an explicit cursor, you have control over its execution cycle from 
+*define a cursor with SELECT statement
+*OPEN
+*FETCH 
+*CLOSE
+ 
+   CREATE OR REPLACE PROCEDURE cursor_demo1
+    AS
+       CURSOR employee_cursor IS SELECT firstname,lastname,desig
+       FROM employee_master;                            -- Defining the cursor
+       -- Declaring the variables which are going to hold the data after fetching the data from the cursor
+       vfirstname employee_master.firstname%TYPE;
+       vlastname employee_master.lastname%TYPE;
+       vdesig  employee_master.desig%TYPE;
+       BEGIN
+       
+      /*  IF employee_cursor%ISOPEN
+        THEN  
+        dbms_output.put_line('Cursor is open so that we can fetch data');
+       else
+          dbms_output.put_line('Cursor is not opened , so we cannot fetch data');
+       END IF; */
+       OPEN employee_cursor;   -- Opening the cursor
+      /*  IF employee_cursor%FOUND
+       THEN
+         dbms_output.put_line('Cursor FOUND');
+        ELSE
+          dbms_output.put_line('Cursor NOT FOUND');
+       END IF; */
+
+
+      /*  IF employee_cursor%ISOPEN
+        THEN  
+        dbms_output.put_line('Cursor is open so that we can fetch data');
+       else
+          dbms_output.put_line('Cursor is not opened , so we cannot fetch data');
+       END IF; */
+       
+           LOOP
+              FETCH employee_cursor INTO vfirstname,vlastname,vdesig;
+               /* IF employee_cursor%FOUND
+                THEN
+                       dbms_output.put_line('Cursor FOUND');
+               END IF; */
+              EXIT WHEN employee_cursor%NOTFOUND;
+              dbms_output.put_line(vfirstname||' '||vlastname||' '||vdesig);
+           END LOOP;
+       CLOSE employee_cursor;
+     END;      
+---------------------------------------------------------------------------------------------
+To see the errors in procedure and functions
+
+   SHOW ERRORS;
+------------------------------------------------------------------------------------------------
+To execute a procedure or function 
+
+EXEC cursor_demo1
+EXECUTE cursor_demo1
+
+
+To categories of command 
+SQL commands
+SQL prompt commands. For SQL prompt commands
+1) The command can be of initial 4 character. example
+    DESCRIBE employee_master
+    DESC employee_master
+    EXECUTE procedure_name
+    EXEC procedure_name
+    SET SERVEROUTPUT ON
+2) It is not essential to end up this commands with ;.
+
+============================================================================
+
+   CREATE OR REPLACE PROCEDURE cursor_demo2
+     AS 
+        cursor employee_cursor IS SELECT firstname,lastname 
+        FROM employee_master;
+     BEGIN
+         FOR rec IN employee_cursor LOOP  
+          dbms_output.put_line(rec.firstname||' '||rec.lastname);
+         END LOOP;
+     END;
+==================================================================================
+What are your observations?
+
+  * open cursor statement is not present or required
+  * FETCH statement is not required
+  * CLOSE statement is not required
+=========================================================================================================
+    What are triggers?
+   The oracle engine allows the definition of procedures that are implicitly executed when some
+   DML ( Insert, UPDATE and DELETE) statements are executed and we can have some system level triggers 
+   also for example we can design a trigger which won't allow user to login during the weekends.
+ 
+   Trigger are procedures but the difference is procedures are called explicitly whereas trigger are
+   called implicitly based on some event like INSERT , UPDATE AND DELETE.
+=======================================================================================================
+WE HAVE two type of Triggers:-
+ 1) STATEMENT LEVEL TRiggers
+ 2) ROW LEVEL Triggers.
+
+   STATEMENT LEVEL TRiggers are fired once for a particular statement. For example if we have designed
+   a statement level trigger for delete operation and we have deleted 4 records. So statement level trigger
+   will be fired once for the DELETE operation where as if it is a ROW level trigger , if 4 records are
+   deleted , row level trigger will be called four times.
+-------------------------------------------------------------------------------------------------------------
+3 basic parts will be there:-
+   1) Triggering event ( INSERT, UPDATE , DELETE)
+   2) TRigger Restriction  ( When the trigger should be fired )
+   3) Tigger Action ( What we need to perform )
+
+
+-------------------------------------------------------------------------------------------------------------
+
+So let us design a trigger which will display a message after insertion of a record.
+
+    1) INSERT
+    2) after the insertion of a record
+    3) We have planned that we will display the message as record got inserted.
+
+ CREATE OR REPLACE TRIGGER statement_trigger1
+   AFTER INSERT ON employee_master
+    BEGIN 
+          dbms_output.put_line('Record got inserted');
+    END;
+   
+-------------------------------------------------------------------------------------------------------------
+
+INSERT INTO employee_master VALUES('E00002','Peter',null,'Desouza','Mgr','Mkt',18000,'06-Jan-1980');
+
+
+
+Let us create own user
+ 
+CREATE USER tom IDENTIFIED BY password123;
+GRANT ALL PRIVILEGES TO tom;
+
+
+
+create or replace trigger row_trigger_after_insert
+after INSERT on employee_master
+for each row
+begin
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.empcode);
+dbms_output.put_line('tHE VALUE FOR OLD'||:OLD.firstname);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.empcode);
+dbms_output.put_line('tHE VALUE FOR NEW'||:NEW.firstname);
+
+end;
+
+
+
+
+
